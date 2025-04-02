@@ -141,3 +141,4 @@ syntax match bsvNiceOperator "<=" conceal cchar=⇐
 highlight link bsvNiceOperator Operator
 highlight! link Conceal Operator
 setlocal conceallevel=1
+highlight Conceal ctermfg=Green

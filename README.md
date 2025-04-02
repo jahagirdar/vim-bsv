@@ -54,3 +54,13 @@ endfunction
 
 autocmd FileType bsv call BSVSetPath(expand('<afile>:p:h'))
 ```
+
+# Support for linting via ALE.
+
+Linting is done via `bsc -u <g:ale_bsv_bsc_options> <filename>`
+
+If additional options need to be passed set `g:ale_bsv_bsc_options` e.g.
+
+```
+let g:ale_bsv_bsc_options='-p /commonlib/bo:+ -verilog'
+```

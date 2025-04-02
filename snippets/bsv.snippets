@@ -1,3 +1,10 @@
+snippet struct
+	typedef struct { ${1:Bit#};
+	} deriving(Bits,Eq);
+snippet enum
+	typedef enum { ${1:Bit#};
+	} deriving(Bits,Eq);
+
 snippet import
 	import ${1:Standard}::*;
 	${2}
@@ -22,8 +29,33 @@ snippet function
 		${3}
 	endfunction
 snippet module
-	module ${1:modulename} (${2});
-		${3}
+	interface Ifc_$1;
+	method Action soft_reset();
+	method Bool reset_done();
+	endinterface
+	import StmtFSM::*;
+	(*synthesize*)
+	module mk${1:modulename} (Ifc_$1);
+		Reg#(Bool) rst_done <- mkRegA(False);
+		${2}
+		let reset=action
+		rst_done <=True;
+		endaction;
+		Stmt stmt_$1=seq
+			if (!rst_done)seq
+				reset;
+			endseq
+		endseq;
+		FSM fsm_$1 <- mkFSM(stmt_$1);
+		rule rl_$1_fsm (fsm_$1.done() && (!rst_done));
+			fsm_$1.start();
+		endrule
+		method Action soft_reset();
+		rst_done <=False;
+		endmethod
+		method Bool reset_done();
+		return rst_done;
+		endmethod
 	endmodule
 snippet rule
 	rule ${1:rulename};
@@ -63,3 +95,12 @@ snippet package
 	package ${1};
 		${2}
 	endpackage
+snippet fsm
+	import StmtFSM::*;
+	Stmt ${1}_stmt=seq
+	endseq;
+	FSM $1 mkFSM($1_stmt);
+	rule $1_rl ($1.done())
+		$1.start();
+	endrule
+
